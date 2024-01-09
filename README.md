@@ -15,13 +15,11 @@ The To-Do List App allows users to:
 
 **User-Friendly Interface:** Intuitive and clean interface for a seamless user experience.
 # Technologies Used
-## Flutter: 
-## Dart:
+### Flutter 
+### Dart
 # Installation
-**Clone Repository:** git clone https://github.com/your_username/to-do-list-app.git
+**Clone Repository:** git clone **https://github.com/Ragunath041/todo-app.git**
 
 **Navigate to Project Directory:** cd to-do-list-app
-
-**Install Dependencies:** flutter pub get
 
 **Run the App:** flutter run  
