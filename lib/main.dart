@@ -27,6 +27,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List todoList = [];
   String singlevalue = "";
+  // List <Map<String,dynamic>> todoList = [];
+  late TextEditingController textController;
+
+  @override
+  void initState(){
+    super.initState();
+    textController = TextEditingController();
+  }
+
+  @override
+  void dispose(){
+    textController.dispose();
+    super.dispose();
+  }
 
   addString(content) {
     setState(() {
@@ -128,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: SizedBox(
                         height: 40,
                         child: TextFormField(
+                          controller: textController,
                           onChanged: (content) {
                             addString(content);
                           },
@@ -155,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             addList();
+                            textController.clear();
                           },
                           child: Container(
                               height: 15,
