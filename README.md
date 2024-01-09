@@ -1,16 +1,27 @@
-# to_do_app
+# To-Do List App with Flutter
+This is a simple to-do list application built using Flutter, a framework developed by Google for building natively compiled applications for mobile, web, and desktop from a single codebase.
+# Overview
+The To-Do List App allows users to:
 
-A new Flutter project.
+● Create, edit, and delete tasks.
 
-## Getting Started
+● Mark tasks as complete or incomplete.
 
-This project is a starting point for a Flutter application.
+● Organize tasks into different categories or lists.
+# Features
+**Task Management:** Easily add, edit, and remove tasks.
 
-A few resources to get you started if this is your first Flutter project:
+**Categories:** Organize tasks by categorizing them into different lists.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**User-Friendly Interface:** Intuitive and clean interface for a seamless user experience.
+# Technologies Used
+## Flutter: 
+## Dart:
+# Installation
+**Clone Repository:** git clone https://github.com/your_username/to-do-list-app.git
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**Navigate to Project Directory:** cd to-do-list-app
+
+**Install Dependencies:** flutter pub get
+
+**Run the App:** flutter run  
