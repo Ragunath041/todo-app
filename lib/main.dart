@@ -73,11 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
         toolbarHeight: 75,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
-        elevation: 0,
+        // leading: IconButton(
+        //   icon: const Icon(Icons.menu),
+        //   onPressed: () {},
+        // ),
+        // elevation: 0,
       ),
       body: Container(
         margin: const EdgeInsets.all(10),
