@@ -90,9 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     return Card(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(5),
                       ),
-                      color: const Color.fromARGB(255, 194, 206, 254),
+                      color: const Color.fromARGB(255, 216, 229, 243),
+                      
                       child: SizedBox(
                         height: 50,
                         width: double.infinity,
@@ -107,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   todoList[index]['value'].toString(),
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: Color.fromARGB(255, 37, 95, 243),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -116,11 +117,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   flex: 20,
                                  child: CircleAvatar(
                                   radius: 30,
-                                  backgroundColor: const Color.fromARGB(255, 226, 9, 9),
+                                  // backgroundColor: const Color.fromARGB(255, 226, 9, 9),
                                   child: TextButton(
                                     onPressed: () => deleteItem(index),
                                     child: const Align(
                                       alignment: Alignment.center,
+                                      child: Icon(
+                                        Icons.delete,
+                                        ),
                                     ),
                                   ),
                                 ),
