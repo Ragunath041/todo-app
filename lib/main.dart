@@ -5,7 +5,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // ignore: use_key_in_widget_constructors
   const MyApp({Key? key});
 
   @override
@@ -49,36 +48,20 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // addList() {
-  //   if (singleValue.isNotEmpty) {
-  //     setState(() {
-  //       todoList.add({"value": singleValue, "completed": false});
-  //       textController.clear();
-  //     });
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Your Task is Empty, Please Enter the Tasks......'),
-  //       ),
-  //     );
-  //   }
-  // }
-
   addList() {
-  if (singleValue.isNotEmpty) {
-    setState(() {
-      todoList.add({"value": singleValue, "completed": false});
-      textController.clear();  // Clear the input field after adding the task
-    });
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Your Task is Empty, Please Enter the Tasks......'),
-      ),
-    );
+    if (singleValue.isNotEmpty) {
+      setState(() {
+        todoList.add({"value": singleValue, "completed": false});
+        textController.clear();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Your Task is Empty, Please Enter the Tasks......'),
+        ),
+      );
+    }
   }
-}
-
 
   completeTask(index) {
     setState(() {
@@ -86,6 +69,135 @@ class _HomeScreenState extends State<HomeScreen> {
       completedList.add(todoList[index]);
       todoList.removeAt(index);
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "To Do App",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+              color: Colors.white,
+            ),
+          ),
+          centerTitle: true,
+          backgroundColor: const Color.fromARGB(255, 210, 186, 139),
+          toolbarHeight: 75, 
+          bottom: const TabBar(
+            labelColor: Colors.white, // Set the label (text) color
+            tabs: [
+              Tab(text: 'Incomplete'),
+              Tab(text: 'Completed'),
+            ],
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 246, 242, 230),
+        
+        body: TabBarView(
+          children: [
+            buildTaskList(todoList),
+            buildTaskList(completedList, isCompleted: true),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Add a new task'),
+                  content: TextField(
+                    controller: textController,
+                    onChanged: (content) {
+                      addString(content);
+                    },
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        addList();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Add'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTaskList(List<Map<String, dynamic>> taskList, {bool isCompleted = false}) {
+    return ListView.builder(
+      itemCount: taskList.length,
+      itemBuilder: (context, index) {
+        return buildTaskCard(index, taskList, isCompleted: isCompleted);
+      },
+    );
+  }
+
+  Widget buildTaskCard(int index, List<Map<String, dynamic>> taskList, {bool isCompleted = false}) {
+    return Card(
+      color: isCompleted ? const Color.fromARGB(255, 190, 255, 224) : const Color(0xFFFAEED1),
+      margin: const EdgeInsets.only(bottom: 20),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(20),
+        title: Row(
+          children: [
+            Checkbox(
+              value: taskList[index]['completed'],
+              onChanged: (value) {
+                if (isCompleted) {
+                  setState(() {
+                    taskList[index]['completed'] = false;
+                    todoList.add(taskList[index]);
+                    completedList.removeAt(index);
+                  });
+                } else {
+                  completeTask(index);
+                }
+              },
+            ),
+            Expanded(
+              child: Text(
+                taskList[index]['value'].toString(),
+                style: TextStyle(
+                  color: isCompleted ? const Color.fromARGB(255, 16, 1, 1) : const Color.fromARGB(255, 1, 13, 13),
+                  fontWeight: FontWeight.bold,
+                  decoration: isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+        trailing: isCompleted
+            ? IconButton(
+                onPressed: () {
+                  deleteItem(index, true);
+                },
+                icon: const Icon(
+                  Icons.delete,
+                  color: Color.fromARGB(255, 255, 123, 114),
+                ),
+              )
+            : null,
+      ),
+    );
   }
 
   deleteItem(index, isCompleted) {
@@ -97,167 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "To-Do App",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 25,
-          ),
-        ),
-        centerTitle: true,
-        toolbarHeight: 75,
-      ),
-      body: Container(
-        margin: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 90,
-              child: ListView.builder(
-                itemCount: todoList.length + completedList.length,
-                itemBuilder: (context, index) {
-                  if (index < todoList.length) {
-                    return buildTaskCard(index, todoList);
-                  } else {
-                    return buildTaskCard(index - todoList.length, completedList, isCompleted: true);
-                  }
-                },
-              ),
-            ),
-            Expanded(
-              flex: 10,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 70,
-                    child: SizedBox(
-                      height: 40,
-                      child: TextFormField(
-                        controller: textController,
-                        onChanged: (content) {
-                          addString(content);
-                        },
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          fillColor: const Color.fromARGB(255, 248, 248, 249),
-                          filled: true,
-                          labelText: 'Task....',
-                          labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 118, 122, 159),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Expanded(
-                    flex: 3,
-                    child: SizedBox(
-                      width: 5,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 27,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        addList();
-                      },
-                      child: Container(
-                        height: 15,
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        child: const Text("Add"),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildTaskCard(int index, List<Map<String, dynamic>> taskList, {bool isCompleted = false}) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
-      color: isCompleted ? Colors.greenAccent : const Color.fromARGB(255, 216, 229, 243),
-      child: SizedBox(
-        height: 50,
-        width: double.infinity,
-        child: Container(
-          margin: const EdgeInsets.only(left: 20),
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 10,
-                child: Checkbox(
-                  value: taskList[index]['completed'],
-                  onChanged: (value) {
-                    if (isCompleted) {
-                      // Handle unchecking completed tasks (move back to todoList)
-                      setState(() {
-                        taskList[index]['completed'] = false;
-                        todoList.add(taskList[index]);
-                        completedList.removeAt(index);
-                      });
-                    } else {
-                      // Handle checking todo tasks (move to completedList)
-                      completeTask(index);
-                    }
-                  },
-                ),
-              ),
-              Expanded(
-                flex: 70,
-                child: Text(
-                  taskList[index]['value'].toString(),
-                  style: TextStyle(
-                    color: isCompleted ? Colors.white : const Color.fromARGB(255, 37, 95, 243),
-                    fontWeight: FontWeight.bold,
-                    decoration: isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 20,
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: isCompleted ? Colors.white : const Color.fromARGB(255, 226, 9, 9),
-                  child: TextButton(
-                    onPressed: () {
-                      if (isCompleted) {
-                        deleteItem(index, true);
-                      } else {
-                        completeTask(index);
-                      }
-                    },
-                    child: const Align(
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
+
+
+
+// #C4DFDF
+// #D2E9E9
+// #E3F4F4
+// #F8F6F4
