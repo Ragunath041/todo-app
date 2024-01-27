@@ -1,25 +1,41 @@
 import 'package:flutter/material.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // ignore: use_key_in_widget_constructors
   const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch(
+          backgroundColor: const Color.fromARGB(229, 238, 248, 252),
+        ),
+        useMaterial3: true,
+      ),
       home: const HomeScreen(),
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.indigo),
     );
   }
 }
 
+class Task {
+  String value;
+  bool completed;
+  DateTime date;
+
+  Task({
+    required this.value,
+    required this.completed,
+    required this.date,
+  });
+}
+
 class HomeScreen extends StatefulWidget {
-  // ignore: use_key_in_widget_constructors
   const HomeScreen({Key? key});
 
   @override
@@ -27,10 +43,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Map<String, dynamic>> todoList = [];
-  List<Map<String, dynamic>> completedList = [];
-  String singleValue = "";
   late TextEditingController textController;
+  List<Task> todoList = [];
+  
+  get completedList => null;
 
   @override
   void initState() {
@@ -38,146 +54,143 @@ class _HomeScreenState extends State<HomeScreen> {
     textController = TextEditingController();
   }
 
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
-
-  addString(content) {
-    setState(() {
-      singleValue = content;
-    });
-  }
-
-  addList() {
-    if (singleValue.isNotEmpty) {
+  addTask(String content, DateTime date) {
+    if (content.isNotEmpty) {
       setState(() {
-        todoList.add({"value": singleValue, "completed": false});
+        todoList.add(Task(value: content, completed: false, date: date));
         textController.clear();
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Your Task is Empty, Please Enter the Tasks......'),
+          content: Text('Your Task is Empty, Please Enter the Task...'),
         ),
       );
     }
   }
 
-  completeTask(index) {
-    setState(() {
-      todoList[index]['completed'] = true;
-      completedList.add(todoList[index]);
-      todoList.removeAt(index);
-    });
+  List<Task> getCompletedTasks() {
+    return todoList.where((task) => task.completed).toList();
+  }
+
+  List<Task> getIncompleteTasks() {
+    return todoList.where((task) => !task.completed).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "To Do App",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 25,
-              color: Colors.white,
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 210, 186, 139),
-          toolbarHeight: 75, 
-          bottom: const TabBar(
-            labelColor: Colors.white, // Set the label (text) color
-            tabs: [
-              Tab(text: 'Incomplete'),
-              Tab(text: 'Completed'),
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: const Text('To Do App'),
+      //   backgroundColor: Color.fromARGB(255, 251, 252, 253),
+      // ),
+      body: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+                backgroundColor: const Color.fromARGB(229, 238, 248, 252),
+                bottom: TabBar(
+                  
+                  labelColor: const Color.fromARGB(255, 8, 0, 0),
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(191),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 251, 65, 65), // Outline color
+                      width: 1, // Outline width
+                    ),
+                  ),
+                  tabs: const [
+                    Tab(text: 'Incomplete'),
+                    Tab(text: 'Completed'),
+                  ],
+                ),
+              ),
+
+          body: TabBarView(
+            children: [
+              _buildTaskList(getIncompleteTasks()),
+              _buildTaskList(getCompletedTasks(), isCompleted: true),
             ],
           ),
-        ),
-        backgroundColor: const Color.fromARGB(255, 246, 242, 230),
-        
-        body: TabBarView(
-          children: [
-            buildTaskList(todoList),
-            buildTaskList(completedList, isCompleted: true),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Add a new task'),
-                  content: TextField(
-                    controller: textController,
-                    onChanged: (content) {
-                      addString(content);
-                    },
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Add a new task'),
+                    content: TextField(
+                      controller: textController,
+                      onChanged: (content) {},
                     ),
-                    TextButton(
-                      onPressed: () {
-                        addList();
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Add'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          child: const Icon(Icons.add),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          DateTime today = DateTime.now();
+                          addTask(textController.text, today);
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Add'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: const Icon(Icons.add),
+            shape: const CircleBorder(),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+          bottomNavigationBar: const BottomAppBar(
+            color: Color.fromARGB(255, 255, 255, 255),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.task),
+                Icon(Icons.calendar_today),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget buildTaskList(List<Map<String, dynamic>> taskList, {bool isCompleted = false}) {
+  Widget _buildTaskList(List<Task> tasks, {bool isCompleted = false}) {
     return ListView.builder(
-      itemCount: taskList.length,
+      itemCount: tasks.length,
       itemBuilder: (context, index) {
-        return buildTaskCard(index, taskList, isCompleted: isCompleted);
+        return _buildTaskCard(index, tasks, isCompleted: isCompleted);
       },
     );
   }
 
-  Widget buildTaskCard(int index, List<Map<String, dynamic>> taskList, {bool isCompleted = false}) {
+  Widget _buildTaskCard(int index, List<Task> tasks, {bool isCompleted = false}) {
     return Card(
-      color: isCompleted ? const Color.fromARGB(255, 190, 255, 224) : const Color(0xFFFAEED1),
+      color: isCompleted ? const Color.fromARGB(229, 238, 248, 252) : const Color.fromARGB(229, 238, 248, 252),
       margin: const EdgeInsets.only(bottom: 20),
       child: ListTile(
         contentPadding: const EdgeInsets.all(20),
         title: Row(
           children: [
             Checkbox(
-              value: taskList[index]['completed'],
+              value: tasks[index].completed,
               onChanged: (value) {
-                if (isCompleted) {
-                  setState(() {
-                    taskList[index]['completed'] = false;
-                    todoList.add(taskList[index]);
-                    completedList.removeAt(index);
-                  });
-                } else {
-                  completeTask(index);
-                }
+                setState(() {
+                  tasks[index].completed = value ?? false;
+                });
               },
             ),
             Expanded(
               child: Text(
-                taskList[index]['value'].toString(),
+                tasks[index].value,
                 style: TextStyle(
                   color: isCompleted ? const Color.fromARGB(255, 16, 1, 1) : const Color.fromARGB(255, 1, 13, 13),
                   fontWeight: FontWeight.bold,
@@ -190,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
         trailing: isCompleted
             ? IconButton(
                 onPressed: () {
-                  deleteItem(index, true);
+                  _deleteItem(index, true);
                 },
                 icon: const Icon(
                   Icons.delete,
@@ -202,20 +215,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  deleteItem(index, isCompleted) {
+  void _deleteItem(int index, bool isCompleted) {
     setState(() {
       if (isCompleted) {
-        completedList.removeAt(index);
-      } else {
         todoList.removeAt(index);
+      } else {
+        completedList.removeAt(index);
       }
     });
   }
 }
-
-
-
-// #C4DFDF
-// #D2E9E9
-// #E3F4F4
-// #F8F6F4
