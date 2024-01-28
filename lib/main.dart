@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -11,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'To Do App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
           backgroundColor: const Color.fromARGB(229, 238, 248, 252),
@@ -45,8 +44,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController textController;
   List<Task> todoList = [];
-  
-  get completedList => null;
 
   @override
   void initState() {
@@ -80,32 +77,26 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('To Do App'),
-      //   backgroundColor: Color.fromARGB(255, 251, 252, 253),
-      // ),
       body: DefaultTabController(
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-                backgroundColor: const Color.fromARGB(229, 238, 248, 252),
-                bottom: TabBar(
-                  
-                  labelColor: const Color.fromARGB(255, 8, 0, 0),
-                  indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(191),
-                    border: Border.all(
-                      color: const Color.fromARGB(255, 251, 65, 65), // Outline color
-                      width: 1, // Outline width
-                    ),
-                  ),
-                  tabs: const [
-                    Tab(text: 'Incomplete'),
-                    Tab(text: 'Completed'),
-                  ],
+            backgroundColor: const Color.fromARGB(229, 238, 248, 252),
+            bottom: TabBar(
+              labelColor: const Color.fromARGB(255, 8, 0, 0),
+              indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(191),
+                border: Border.all(
+                  color: const Color.fromARGB(255, 3, 115, 252),
+                  width: 1,
                 ),
               ),
-
+              tabs: const [
+                Tab(text: 'Incomplete'),
+                Tab(text: 'Completed'),
+              ],
+            ),
+          ),
           body: TabBarView(
             children: [
               _buildTaskList(getIncompleteTasks()),
@@ -147,14 +138,22 @@ class _HomeScreenState extends State<HomeScreen> {
             shape: const CircleBorder(),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          bottomNavigationBar: const BottomAppBar(
+          bottomNavigationBar: BottomAppBar(
             color: Color.fromARGB(255, 255, 255, 255),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Icon(Icons.task),
-                Icon(Icons.calendar_today),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CalenderPage()),
+                    );
+                  },
+                  child: Icon(Icons.calendar_today),
+                ),
               ],
             ),
           ),
@@ -219,9 +218,23 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       if (isCompleted) {
         todoList.removeAt(index);
-      } else {
-        completedList.removeAt(index);
       }
     });
+  }
+}
+
+class CalenderPage extends StatelessWidget {
+  const CalenderPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Calendar Page"),
+      ),
+      body: Center(
+        child: Text('This is Calendar Page'),
+      ),
+    );
   }
 }
